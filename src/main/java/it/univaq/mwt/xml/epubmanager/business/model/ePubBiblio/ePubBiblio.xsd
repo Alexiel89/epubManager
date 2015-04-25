@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<xs:schema version="1.0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://it.univaq.mwt.xml/epubmanager"
+           targetNamespace="http://it.univaq.mwt.xml/epubmanager"
+           elementFormDefault="qualified" attributeFormDefault="unqualified">
+    
+    <!-- Definiamo i simpeType che faranno prte dell'ePub -->
+    <xs:simpleType name="idType">
+        <xs:restriction base="xs:nonNegativeInteger"> 
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Title">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="1"/>
+            <xs:maxLength value="100"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Language">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="2"/>
+            <xs:maxLength value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Identifier">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="13"/>
+            <xs:maxLength value="13"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Creator">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="1"/>
+            <xs:maxLength value="30"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Publisher">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="1"/>
+            <xs:maxLength value="40"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="Format">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="1"/>
+            <xs:maxLength value="15"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Source">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="1"/>
+            <xs:maxLength value="15"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Type">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="1"/>
+            <xs:maxLength value="15"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Contributor">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="1"/>
+            <xs:maxLength value="30"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Relation">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="1"/>
+            <xs:maxLength value="20"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Rights">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="1"/>
+            <xs:maxLength value="40"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Coverage">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="1"/>
+            <xs:maxLength value="15"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Description">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="1"/>
+            <xs:maxLength value="100"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Subject">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="1"/>
+            <xs:maxLength value="20"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="NumImg">
+        <xs:restriction base="xs:nonNegativeInteger"> 
+            <xs:minInclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="NumWords">
+        <xs:restriction base="xs:nonNegativeInteger"> 
+            <xs:minInclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="NumChapters">
+        <xs:restriction base="xs:nonNegativeInteger"> 
+            <xs:minInclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="PFile">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="0"/>          
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Frequency">
+        <xs:restriction base="xs:nonNegativeInteger"> 
+            <xs:minInclusive value="0"/>
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="Name">
+        <xs:restriction base="xs:string"> 
+            <xs:minLength value="0"/>
+            <xs:maxLength value="100"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <!-- END -->
+
+    <!-- Definiamo gli elementi dei singoli simpleType -->
+    <xs:element name="titolo" type="Title"/>
+    <xs:element name="lingua" type="Language"/>
+    <xs:element name="isbn" type="Identifier"/>
+    <xs:element name="autore" type="Creator"/>
+    <xs:element name="editore" type="Publisher"/>
+    <xs:element name="formato" type="Format"/>
+    <xs:element name="origine" type="Source"/>
+    <xs:element name="tipo" type="Type"/>
+    <xs:element name="data" type="xs:dateTime"/>
+    <xs:element name="collaboratore" type="Contributor"/>
+    <xs:element name="relazione" type="Relation"/>
+    <xs:element name="dirittiautore" type="Rights"/>
+    <xs:element name="destinazone" type="Coverage"/>
+    <xs:element name="descrizione" type="Description"/>
+    <xs:element name="soggetto" type="Subject"/>
+    <xs:element name="immagini" type="NumImg"/>
+    <xs:element name="parole" type="NumWords"/>
+    <xs:element name="capitoli" type="NumChapters"/>
+    <xs:element name="percorsofile" type="PFile"/>
+    <xs:element name="frequenza" type="Frequency"/>
+    <xs:element name="nome" type="Name"/>
+    <!-- END -->
+
+    <!-- Definiamo il complexType ePubType -->
+
+    <xs:complexType name="ePubType">
+        <xs:sequence maxOccours="1">
+            <xs:element ref="titolo" minOccours="0" maxOccours="1"/>
+            <xs:element ref="lingua" minOccours="0" maxOccours="1"/>
+            <xs:element ref="isbn" minOccours="0" maxOccours="1"/>
+            <xs:element ref="autore" minOccours="0" maxOccours="1"/>
+            <xs:element ref="editore" minOccours="0" maxOccours="1"/>
+            <xs:element ref="formato" minOccours="0" maxOccours="1"/>
+            <xs:element ref="origine" minOccours="0" maxOccours="1"/>
+            <xs:element ref="tipo" minOccours="0" maxOccours="1"/>
+            <xs:element ref="data" minOccours="0" maxOccours="1"/>
+            <xs:element ref="collaboratore" minOccours="0" maxOccours="1"/>
+            <xs:element ref="relazione" minOccours="0" maxOccours="1"/>
+            <xs:element ref="dirittiautore" minOccours="0" maxOccours="1"/>
+            <xs:element ref="destinazione" minOccours="0" maxOccours="1"/>
+            <xs:element ref="descrizione" minOccours="0" maxOccours="1"/>
+            <xs:element ref="soggetto" minOccours="0" maxOccours="1"/>
+            <xs:element ref="immagini" minOccours="0" maxOccours="1"/>
+            <xs:element ref="parole" minOccours="0" maxOccours="1"/>
+            <xs:element ref="capitoli" minOccours="0" maxOccours="1"/>
+            <xs:element ref="percorsofile" minOccours="0" maxOccours="1"/>
+        </xs:sequence>
+        <xs:attribute name="id" type="xs:nonNegativeInteger" use="required"/>
+        <xs:attribute name="dataInserimento" type="xs:date" use="required"/>
+    </xs:complexType>
+    <!-- END -->
+        
+    <!-- definiamo il complexType authoi -->
+    <xs:complexType name="autori">
+        <xs:sequence maxOccourd="1">
+            <xs:element ref="nome"/>
+            <xs:element ref="frequenza"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- END -->
+         
+    <!-- definiamo l'elemento tipo author -->
+    <xs:element name="author" type="autori"/>
+    <!-- END -->
+        
+    <!-- def il complexType ... -->
+    <xs:complexType name="statAutoriType">
+        <xs:sequence minOccours="0" maxOccours="unbounded">
+            <xs:element ref="author"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- END -->
+        
+    <!-- def l'elemento StatisticheAutori di tipo statAutoriType -->
+    <xs:element name="StatisticheAutori" type="statAutoriType"/>
+    <!-- END -->
+    <!-- def statType -->
+    <xs:complexType name="statisticheType">
+        <xs:sequence maxOccours="1">
+            <xs:element ref="StatisticheAutori"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- END -->
+        
+    <!-- def elemento lista-statistiche -->
+    <xs:element name="lista-statistiche" type="statisticheType"/>
+    <!-- END -->
+        
+    <!-- def elemento ePub -->
+    <xs:element name="ePub" type="ePubType"/>
+    <!-- END -->
+        
+    <!-- def il complexType ... -->
+    <xs:complexType name="ePubListType">
+        <xs:sequence minOccours="0" maxOccours="unbounded">
+            <xs:element ref="ePub"/>
+        </xs:sequence>
+    </xs:complexType>
+    <!-- END -->  
+         
+    <!-- Def l'elemento -->
+    <xs:element name="epubList" type="ePubListType"/>
+    <!-- END -->
+         
+    <!-- def il complexType ... -->
+    <xs:complexType name="ePubBiblioType">
+        <xs:sequence minOccours="0" maxOccours="unbounded">
+            <xs:element ref="epubList" minOccours="0" maxOccours="1"/> 
+            <xs:element ref="lista-statistiche" minoccours="0" maxOccours="1"/>  
+        </xs:sequence>
+    </xs:complexType>
+    <!-- END -->
+         
+    <!-- def elemento ePubBiblio -->
+    <xs:element name="ePubBiblio" type="ePubBiblioType"/>       
+    <!-- END -->
+        
+</xs:schema>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+       
+<tiles-definitions>
+
+    <definition name="standard" template="/WEB-INF/views/layout/layout.jsp">
+        <put-attribute name="menu" value="/WEB-INF/views/layout/menu.jsp"/>
+        <put-attribute name="footer" value="/WEB-INF/views/layout/footer.jsp"/>
+    </definition>
+    
+    <!-- common pages -->
+    
+    <definition name="common.index" extends="standard">
+        <put-attribute name="body" value="/WEB-INF/views/common/index.jsp"/>
+    </definition>
+
+    <definition name="common.ok" extends="standard">
+        <put-attribute name="body" value="/WEB-INF/views/common/ok.jsp"/>
+    </definition>
+    
+    <definition name="common.error" extends="standard">
+        <put-attribute name="body" value="/WEB-INF/views/common/error.jsp"/>
+    </definition>
+    
+     <!-- packager pages -->
+    
+    <definition name="metadata.createform" extends="standard">
+    	<put-attribute name="action" value="/packager/create"/>
+        <put-attribute name="body" value="/WEB-INF/views/packager/metadata_form.jsp"/>
+    </definition>
+    
+    <definition name="uploadresources.createform" extends="standard">
+    	<put-attribute name="action" value="/packager/uploadresources"/>
+        <put-attribute name="body" value="/WEB-INF/views/packager/uploadresources_form.jsp"/>
+    </definition>
+    
+    <definition name="orderresorces.views" extends="standard">
+        <put-attribute name="body" value="/WEB-INF/views/packager/orderresources_views.jsp"/>
+    </definition>
+    
+    <definition name="orderresorces.updateform" extends="standard">
+        <put-attribute name="action" value="/packager/orderresources/update"/>
+        <put-attribute name="update" value="true"/>
+        <put-attribute name="body" value="/WEB-INF/views/packager/orderresources_form.jsp"/>
+    </definition>
+    
+    <definition name="orderresorces.deleteform" extends="standard">
+        <put-attribute name="action" value="/packager/orderresources/delete"/>
+        <put-attribute name="delete" value="true"/>
+        <put-attribute name="body" value="/WEB-INF/views/packager/orderresources_form.jsp"/>
+    </definition>
+    
+    <!-- ePubBiblio -->
+    
+    <definition name="ePubBiblio.uploadEPub" extends="standard">
+        <put-attribute name="action" value="/ePubBiblio/upload-epub"/>
+        <put-attribute name="body" value="/WEB-INF/views/ePubBiblio/ePubBiblio_upload.jsp"/>
+    </definition>
+    
+</tiles-definitions>
