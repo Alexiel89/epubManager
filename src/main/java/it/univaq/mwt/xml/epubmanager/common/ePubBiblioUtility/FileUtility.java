@@ -20,7 +20,7 @@ public class FileUtility {
     public static File findFile(String fileDir) throws BusinessException {
         File file = FileUtils.getFile(fileDir);
         if(!file.exists()){
-            System.out.println("Il file content opf non esiste!");
+            System.out.println("Il file non esiste!");
         } else {
             System.out.println("Ecco il file " + file.getName() + ": " + fileDir);
         }

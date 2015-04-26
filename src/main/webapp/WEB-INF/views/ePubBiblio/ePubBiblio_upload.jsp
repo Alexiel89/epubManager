@@ -53,7 +53,7 @@
         <div class="form-group">
             <label for="eFile"><spring:message code="epubbiblio.upload.epubfiles" /></label>
             <input name="eFile" id="eFile" type="file" class="file-loading" data-show-upload="false"
-            accept=".epub" multiple="multiple"/>
+            accept=".epub" multiple="multiple" required />
             <div id="errorepubfile" class="help-block"></div>
         </div>
     </div>	

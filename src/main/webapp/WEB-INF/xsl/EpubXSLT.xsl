@@ -17,8 +17,8 @@
         
         <table id="tavola" border="1">
             
-            <tr bgcolor="#9acd32">
-                <td style="text-align:left">
+            <tr>
+                <td bgcolor="#9acd32" style="text-align:left">
                     <p>
                         <b>Numero di ePub</b>
                     </p>
@@ -32,8 +32,8 @@
                 </td>
             </tr>
             
-            <tr bgcolor="#9acd32">
-                <td style="text-align:left">
+            <tr>
+                <td bgcolor="#9acd32" style="text-align:left">
                     <p>
                         <b>Autore più presente</b>
                     </p>
@@ -50,7 +50,7 @@
         </html>
     </xsl:template>
     <xsl:template name="numeroEpub">
-        <xsl:value-of select="count(//e:ePub)"/>           
+        <xsl:value-of select="count(//e:ePubList/e:EPub)"/>           
     </xsl:template>
     <xsl:template name="mostAuthor">
         <xsl:for-each select="//e:lista-statistiche/e:StatisticheAutori/e:author">
@@ -60,7 +60,7 @@
             </xsl:if>
         </xsl:for-each>
     </xsl:template> 
-       
+        
     <xsl:template name="vistaEpub">
         <table id="tavola2" border="1">
             <tr bgcolor="#9acd32">
@@ -103,8 +103,8 @@
                 </td>
             </tr>
                
-            <xsl:for-each select="//e:ePub">
-                <tr bgcolor="#9acd32">
+            <xsl:for-each select="//e:ePubList/e:EPub">
+                <tr>
                     <td style="text-align:left">
                         <p>
                             <small>
@@ -112,14 +112,14 @@
                             </small>
                         </p>
                     </td>
-                    <td style="text-align:left">
+                    <td>
                         <p>
                             <small>
                                 <xsl:value-of select="e:autore/text()" />
                             </small>
                         </p>
                     </td>
-                    <td style="text-align:left">
+                    <td>
                         <p>
                             <small>
                                 <xsl:value-of select="e:lingua/text()" />
@@ -128,28 +128,28 @@
                     </td>
                     
                     
-                    <td style="text-align:left">
+                    <td>
                         <p>
                             <small>
                                 <xsl:value-of select="e:immagini/text()" />
                             </small>
                         </p>
                     </td>
-                    <td style="text-align:left">
+                    <td>
                         <p>
                             <small>
                                 <xsl:value-of select="e:parole/text()" />
                             </small>
                         </p>
                     </td>
-                    <td style="text-align:left">
+                    <td>
                         <p>
                             <small>
                                 <xsl:value-of select="e:capitoli/text()" />
                             </small>
                         </p>
                     </td>
-                    <td style="text-align:left">
+                    <td>
                         <p>
                             <small>
                                 <xsl:value-of select="e:percorsofile/text()" />

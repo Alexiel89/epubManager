@@ -56,6 +56,7 @@
         </property>
     </bean>
     <bean id="tilesViewResolver" class="org.springframework.web.servlet.view.tiles3.TilesViewResolver"/>
+    
     <!-- ================= XSLT ================= -->
     <bean id="XSLTViewResolver" class="org.springframework.web.servlet.view.xslt.XsltViewResolver">
         <property name="order" value="1"/>

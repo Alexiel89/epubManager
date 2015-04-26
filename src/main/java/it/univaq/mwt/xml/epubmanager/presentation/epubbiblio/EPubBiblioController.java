@@ -62,7 +62,7 @@ public class EPubBiblioController {
      * Gestione della tabella degli EPub
      */
     @RequestMapping(value="/findAllEpubsPaginated.do")
-    public @ResponseBody ResponseGrid<EPub> findAllBrandsPaginated(@ModelAttribute RequestGrid requestGrid) throws BusinessException, XPathExpressionException, FileNotFoundException {
+    public @ResponseBody ResponseGrid<EPub> findAllEpubsPaginated(@ModelAttribute RequestGrid requestGrid) throws BusinessException, XPathExpressionException, FileNotFoundException {
         File biblioXml = FileUtility.findFile(pathEPubBiblio + "EPubBiblio.xml");
 	ResponseGrid<EPub> responseGrid = service.findAllEpubsPaginated(requestGrid, biblioXml);
 	return responseGrid;
@@ -88,10 +88,8 @@ public class EPubBiblioController {
      */
     @RequestMapping(value="/deleteEpub.do")
     public String deleteEpub(@RequestParam("id") Long id) throws FileNotFoundException, XPathExpressionException, IOException, TransformerException, ParserConfigurationException, SAXException {
-        //File biblioXml = FileUtility.findFile(pathEPubBiblio + "EPubBiblio.xml");
-        String biblioXml = pathEPubBiblio;
-        service.deleteEpubInBiblioFile(id, biblioXml);
-        return "ePubBiblio.uploadEPub";
+        service.deleteEpubInBiblioFile(id, pathEPubBiblio);
+        return "common.ok";
     }
 
     @RequestMapping(value="/upload-epub", method={RequestMethod.GET})

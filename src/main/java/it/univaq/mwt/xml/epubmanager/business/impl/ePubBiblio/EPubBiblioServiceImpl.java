@@ -13,11 +13,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -26,7 +29,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,6 +40,9 @@ import org.xml.sax.SAXException;
 @Service
 public class EPubBiblioServiceImpl implements EPubBiblioService{
     
+    /**
+     * Metodo che permette di gestire la tabella con la lista degli Epub
+     */
     @Override
     public ResponseGrid<EPub> findAllEpubsPaginated(RequestGrid requestGrid, File f) throws BusinessException {
         List<EPub> epubList = new ArrayList<EPub>();
@@ -129,145 +134,133 @@ public class EPubBiblioServiceImpl implements EPubBiblioService{
     }
     
     /**
-     * Metodo che permette di eliminare un Epub dalla Biblio
+     * Metodo che permette di eliminare un Epub selezionato tramite un pulsante
+     * visualizzato dalla tabella, che si trova nella Biblio
      */
     @Override
-    public void deleteEpubInBiblioFile(Long id, String biblio) throws FileNotFoundException, XPathExpressionException, IOException, TransformerException, ParserConfigurationException, SAXException{
+    public void deleteEpubInBiblioFile(Long id, String biblio) throws FileNotFoundException, XPathExpressionException, IOException, ParserConfigurationException, SAXException{
         MyErrorHandler eh = new MyErrorHandler();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         db.setErrorHandler(eh);
-        //uso il DOM per fare le operazioni di rimozione del documento XML
+        //uso il DOM per fare le operazioni di rimozione del nodo nel documento XML
         String biblioXml = biblio + "EPubBiblio.xml";
 	Document doc = db.parse(biblioXml);
         
         XPathFactory xf = XPathFactory.newInstance();
         XPath x = xf.newXPath();
-        //NamespaceContextHandler nch = new NamespaceContextHandler();
-        //nch.addBinding("n", "http://it.univaq.mwt.xml/epubmanager");
-        //x.setNamespaceContext(nch);
             //cancello il file che si trova nella cartella dei file uploadati
-            //InputSource file = new InputSource(new FileReader(f));
             Object filePath = x.evaluate("//EPub[@id="+ (id.intValue()) +"]/percorsofile/text()", doc, XPathConstants.STRING);
             String path = (String) filePath;
             String pathToDelete = path + ".epub";
-            System.out.println("Il file da eliminare è:" + pathToDelete);
+            System.out.println("Il file da eliminare è: " + pathToDelete);
             File fileToDelete = new File(pathToDelete);
-            fileToDelete.delete();
-            System.out.println("Il file" + fileToDelete.getName() + "è stato eliminato con successo!");
-            String dirFileToDelete = biblio + File.separator + id.toString();
+            if(fileToDelete.exists()){
+                fileToDelete.delete();
+            }
+            System.out.println("Il file " + fileToDelete.getName() + "è stato eliminato con successo!");
+            //cancello la cartella dove si trovano i file dell'epub scompattato
+            String dirFileToDelete = biblio + id.toString();
             File dirToDelete = new File(dirFileToDelete);
-            delete(dirToDelete);
-            //Elimino l'epub dal file XML
-            //file = new InputSource(new FileReader(f));
-            //Object epubListElement = x.evaluate("//n:ePubList", doc, XPathConstants.NODE);
-            //Node el = (Node) epubListElement;
-            //file = new InputSource(new FileReader(doc));
-            
+            EPubBiblioServiceImpl.delete(dirToDelete);
+            System.out.println("La cartella " + dirToDelete + "è stata eliminata con successo!");
+            //cancello l'elemento Epub che si trova all'interno del file XML
             Object epub = x.evaluate("//EPub[@id="+ (id.intValue()) +"]", doc, XPathConstants.NODE);
-            Element e = (Element) epub;         
+            Node e = (Node) epub; 
             System.out.println("Eliminazione del nodo all'interno del file EpubBiblio.xml: " + e.getNodeName());
             e.getParentNode().removeChild(e);
-            doc.normalize();
+            System.out.println("Nodo " + e.getNodeName() + id.toString() + " eliminato con successo!");
+            //aggiorno le statistiche relative agli Epub
+            Object children = x.evaluate("//n:ePubList/*", doc, XPathConstants.NODESET);
+            NodeList epubs = (NodeList) children;
+            EPubBiblioServiceImpl.aggiornaStatistiche(doc, epubs, biblio);
+            System.out.println("Le statistiche sono state aggiornate con successo!");
             doc.getDocumentElement().normalize();
-            System.out.println("Nodo " + e.getNodeName() + " eliminato con successo!");
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        DOMSource source = new DOMSource(doc);
-        StreamResult result = new StreamResult(new File(biblioXml));
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes"); 
-        transformer.transform(source, result);
+        try {
+            //aggiorno il file XML
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(biblioXml));
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.transform(source, result);
+        } catch (TransformerConfigurationException ex) {
+            ex.getMessage();
+        } catch (TransformerException ex) {
+            ex.getMessage();
+        }
+        
     }
     
-    void delete(File f) throws IOException {
-	if (f.isDirectory()) {
-            for (File c : f.listFiles())
-	      delete(c);
-	}
-	if (!f.delete())
-	    throw new FileNotFoundException("Failed to delete file: " + f);
+    /* 
+    * senza questo metodo la cartella non viene eliminata perché
+    * contiene vari file ovviamente, quindi il semplice metodo delete
+    * può essere applicato solo al singolo file!
+    */
+    private static void delete(File dir) throws IOException {
+        if(dir.isDirectory()){
+            for(File file : dir.listFiles())
+                delete(file);
+            }
+        if(!dir.delete())
+            throw new FileNotFoundException("Il file" + dir + "non è stato cancellato!");
     }
     
-    /*
-    @Override
-    public void deleteEpubInBiblioFile(Long id, String path) throws TransformerException {*/
-		/* Ci sono tre fasi:
-		 * 1) Eliminare il file ePub da uploadedFile 
-		 * 2) Eliminare i file dell'ePub scompattato nella cartella utente
-		 * 3) Eliminare il tag Epub dal file XML
-		 * */
-		/*File fileToDelete = null;
-		String pathFileToDelete = null;
-		String expressionEpub = null;
-		Node x = null;
-		Node xFather = null;*/
-		//Operare in questo modo:
-		//ho solo l'id quindi dall'id devo ricavare il nome del file ePub
-		/*DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-		DocumentBuilder dBuilder;
-		String pathDirDel = path+ File.separator + id.toString();
-		try {
-			dBuilder = dbFactory.newDocumentBuilder();
-			Document doc = dBuilder.parse(path);
-			doc.getDocumentElement().normalize();
-			XPath xPath =  XPathFactory.newInstance().newXPath();
-			*/
-			//String expressionEpub = "//ePub["+(id.intValue())+"]/percorsofile";
-			/*expressionEpub = "//EPub[@id="+(id.intValue())+"]/percorsofile";
-			System.out.println("======Eliminazione File Epub======");
-			System.out.println("Espressione da validare = " + expressionEpub);
-			x = (Node) xPath.compile(expressionEpub).evaluate(doc, XPathConstants.NODE);
-			System.out.println("Contenuto = " + x.getTextContent());
-			xFather = x.getParentNode();
-			System.out.println("Padre è: " + xFather.getNodeName());
-			pathFileToDelete = x.getTextContent();
-			pathFileToDelete += ".epub";
-			System.out.println("Eliminazione file : " + pathFileToDelete + " in corso...");
-			fileToDelete = new File(pathFileToDelete);
-			fileToDelete.delete();
-			
-			delete(new File(pathDirDel));
-			System.out.println("Eliminazione Completata");
-			System.out.println("======FINE======");
-			System.out.println("======Inizio Eliminazione da file XML======");*/
-			//NodeList prova = doc.getElementsByTagName("ePub");
-			
-			//Node XMeta = prova.item(id.intValue()-1);
-			/*String expressionDeleteEpub = "//ePub[@id="+(id.intValue())+ "]";
-			System.out.println("Espressione da validare " + expressionDeleteEpub);
-			Node XMeta = (Node) xPath.compile(expressionDeleteEpub).evaluate(doc, XPathConstants.NODE); 
-			System.out.println("Node XMETA selezionato = > " + XMeta.getNodeName());
-			Node XMetaEpub = XMeta.getParentNode();
-			System.out.println("Il parent node è = > " + XMetaEpub.getNodeName());
-			XMetaEpub.removeChild(XMeta);
-			doc.normalize();
-			doc.getDocumentElement().normalize();
-			TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			Transformer transformer = transformerFactory.newTransformer();
-			DOMSource source = new DOMSource(doc); 
-			StreamResult result = new StreamResult(new File(path)); 
-			transformer.setOutputProperty(OutputKeys.INDENT, "yes"); 
-			transformer.transform(source, result); 
-			System.out.println("====FINE=====");*/
-			
-			//String expressionPercorsoFile = "/ePubBiblio/ePub["+id+ "]/percorsofile";
-			
-		//} catch (ParserConfigurationException | SAXException | IOException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		//} catch (XPathExpressionException e) {
-			// TODO Auto-generated catch block
-			//e.printStackTrace();
-		/*}
-	}
-	void delete(File f) throws IOException {
-		  if (f.isDirectory()) {
-		    for (File c : f.listFiles())
-		      delete(c);
-		  }
-		  if (!f.delete())
-		    throw new FileNotFoundException("Failed to delete file: " + f);
-	}
-        */
-
+    /* 
+    * Metodo che permette di aggiornare le statistiche durante l'eliminazione dell'Epub
+    * oppure di eliminare il file Epub nel caso in cui viene svuotata la biblioteca
+    */
+    private static void aggiornaStatistiche(Document doc, NodeList epubs, String biblio) throws IOException {
+        XPathFactory xf = XPathFactory.newInstance();
+        XPath x = xf.newXPath();
+            for(int j=0; j < epubs.getLength(); j++){
+        try {
+            Element epub = (Element) epubs.item(j);
+            Object aus = x.evaluate("//lista-statistiche/StatisticheAutori/author[nome=\"" + epub.getElementsByTagName("autore") + "\"]", doc, XPathConstants.NODESET);
+            NodeList authors = (NodeList) aus;
+            NodeList authorsEpubs = doc.getElementsByTagName("author");
+            //se c'è l'elemento author
+            if(authors.getLength()!=0){
+                Element auth = (Element) authors.item(0);
+                System.out.println("L'autore è: " + auth);
+                String nome = auth.getElementsByTagName("nome").item(0).getTextContent();
+                String frequenza = auth.getElementsByTagName("frequenza").item(0).getTextContent();
+                
+                System.out.println("Il nome dell'autore è: " + nome);
+                System.out.println("La frequenza dell'autore è: " + frequenza);
+                
+                boolean trovato = false;
+                for (int k= 0; k < authorsEpubs.getLength() - 1 || !trovato; k++) {
+                    Element author = (Element) authorsEpubs.item(k);
+                    String nuovoNomeAutore = author.getElementsByTagName("nome").item(0).getTextContent();
+                    System.out.println(nuovoNomeAutore);
+                    //se autore e author combaciano
+                    if (nuovoNomeAutore == nome) {
+                        if (!author.getElementsByTagName("frequenza").item(0).getTextContent().equals(null)) {
+                            int y = Integer.parseInt(author.getElementsByTagName("frequenza").item(0).getTextContent());
+                            y--;
+                            author.getElementsByTagName("frequenza").item(0).setTextContent(Integer.toString(y));
+                            trovato = true;
+                        }
+                    }
+                }
+            }else {
+                //se la frequenza dell'autore è pari a 0
+                String biblioXml = biblio + "EPubBiblio.xml";
+                File fileBiblio = new File(biblioXml);
+                if(fileBiblio.exists()){
+                    fileBiblio.delete();
+                }
+                String epubUploadedDir = biblio + "ePubBiblioUploaded";
+                File dirUploadedFiles = new File(epubUploadedDir);
+                EPubBiblioServiceImpl.delete(dirUploadedFiles);
+             }
+        } catch (XPathExpressionException ex) {
+            ex.getMessage();
+        }
+      }
+    }
+    
 }
+    
+

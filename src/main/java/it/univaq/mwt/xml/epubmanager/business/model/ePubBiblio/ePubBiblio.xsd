@@ -175,9 +175,9 @@
 
     <xs:complexType name="ePubType">
         <xs:sequence maxOccours="1">
-            <xs:element ref="titolo" minOccours="0" maxOccours="1"/>
-            <xs:element ref="lingua" minOccours="0" maxOccours="1"/>
-            <xs:element ref="isbn" minOccours="0" maxOccours="1"/>
+            <xs:element ref="titolo" />
+            <xs:element ref="lingua" />
+            <xs:element ref="isbn" />
             <xs:element ref="autore" minOccours="0" maxOccours="1"/>
             <xs:element ref="editore" minOccours="0" maxOccours="1"/>
             <xs:element ref="formato" minOccours="0" maxOccours="1"/>
@@ -190,10 +190,10 @@
             <xs:element ref="destinazione" minOccours="0" maxOccours="1"/>
             <xs:element ref="descrizione" minOccours="0" maxOccours="1"/>
             <xs:element ref="soggetto" minOccours="0" maxOccours="1"/>
-            <xs:element ref="immagini" minOccours="0" maxOccours="1"/>
-            <xs:element ref="parole" minOccours="0" maxOccours="1"/>
-            <xs:element ref="capitoli" minOccours="0" maxOccours="1"/>
-            <xs:element ref="percorsofile" minOccours="0" maxOccours="1"/>
+            <xs:element ref="immagini"/>
+            <xs:element ref="parole" />
+            <xs:element ref="capitoli" />
+            <xs:element ref="percorsofile" />
         </xs:sequence>
         <xs:attribute name="id" type="xs:nonNegativeInteger" use="required"/>
         <xs:attribute name="dataInserimento" type="xs:date" use="required"/>
@@ -236,14 +236,14 @@
     <xs:element name="lista-statistiche" type="statisticheType"/>
     <!-- END -->
         
-    <!-- def elemento ePub -->
-    <xs:element name="ePub" type="ePubType"/>
+    <!-- def elemento EPub -->
+    <xs:element name="EPub" type="ePubType"/>
     <!-- END -->
         
     <!-- def il complexType ... -->
     <xs:complexType name="ePubListType">
         <xs:sequence minOccours="0" maxOccours="unbounded">
-            <xs:element ref="ePub"/>
+            <xs:element ref="EPub"/>
         </xs:sequence>
     </xs:complexType>
     <!-- END -->  

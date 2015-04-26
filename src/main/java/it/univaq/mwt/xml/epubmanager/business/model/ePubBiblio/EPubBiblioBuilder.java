@@ -198,7 +198,7 @@ public class EPubBiblioBuilder {
             EPub ep = (EPub) iterator.next();
             //
             String expression = "//lista-statistiche/StatisticheAutori/author[nome=\"" + ep.getAutore() + "\"]";
-System.out.println(expression);
+            System.out.println(expression);
             XPathFactory fact = XPathFactory.newInstance();
             XPath xPath = fact.newXPath();
             NodeList XMeta;
